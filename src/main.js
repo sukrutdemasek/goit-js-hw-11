@@ -16,23 +16,30 @@ function implementSubmit(event) {
   event.preventDefault();
   inputLoader.classList.remove('hidden');
   let queryWord = inputLine.value.trim();
-  searchImage(`${queryWord}`).then(data => {
-    if (data.total == 0) {
+  searchImage(`${queryWord}`)
+    .then(data => {
+      if (queryWord === '') {
+        iziToast.error({
+          position: 'topRight',
+          message: 'Please fill the input',
+        });
+        inputLoader.classList.add('hidden');
+        return;
+      } else if (data.total == 0) {
+        iziToast.error({
+          position: 'topRight',
+          message:
+            'Sorry, there are no images matching your search query. Please try again!',
+        });
+        inputLoader.classList.add('hidden');
+        return;
+      } else createGallery(data);
+      inputLoader.classList.add('hidden');
+    })
+    .catch(error => {
       iziToast.error({
         position: 'topRight',
-        message:
-          'Sorry, there are no images matching your search query. Please try again!',
+        message: `${error}`,
       });
-      inputLoader.classList.add('hidden');
-      return;
-    } else if (queryWord === '') {
-      iziToast.error({
-        position: 'topRight',
-        message: 'Please fill the input',
-      });
-      inputLoader.classList.add('hidden');
-      return;
-    } else createGallery(data);
-    inputLoader.classList.add('hidden');
-  });
+    });
 }
